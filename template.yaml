@@ -3,10 +3,10 @@ kind: Template
 metadata:
   name: create-java-app-template
   title: Java App Template
-  description: Create a new java website project
+  description: Create a new CRA website project
   tags:
-    - java
-    - template
+    - gamification
+    - cra
 spec:
   owner: web@example.com
   type: website
@@ -43,7 +43,7 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - github.com
+              - dev.azure.com
   steps:
     - id: template
       name: Fetch Skeleton + Template
@@ -57,15 +57,29 @@ spec:
           description: ${{ parameters.description }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
+   
+    # - id: fetch-docs
+    #   name: Fetch Docs
+    #   action: fetch:plain
+    #   input:
+    #     targetPath: ./software-templates
+    #     url: https://github.com/jayacs185/software-templates
 
     - id: publish
       name: Publish
-      action: publish:github
+      action: publish:azure
       input:
         allowedHosts:
-          - github.com
+          - dev.azure.com
         description: This is ${{ parameters.component_id }}
         repoUrl: ${{ parameters.repoUrl }}
+
+    #- id: humanitec-create-app
+    #  name: Create Humanitec App
+    #  action: humanitec:create-app
+    #  input:
+    #    setupFile: humanitec-apps.yaml
+    #    appId: ${{ parameters.componentName }}   
 
     - id: register
       name: Register

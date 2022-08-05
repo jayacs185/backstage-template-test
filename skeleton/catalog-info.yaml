@@ -6,7 +6,7 @@ metadata:
   description: ${{values.description | dump}}
   {%- endif %}
   annotations:
-    github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
+    github.com/project-slug: jayacs185/backstage-template-test
     backstage.io/techdocs-ref: dir:.
     #backstage.io/code-coverage: scm-only
     #backstage.io/managed-by-origin-location: url:http://github.com/jayacs185/backstage-template-test/blob/main/skeleton/catalog-info.yaml

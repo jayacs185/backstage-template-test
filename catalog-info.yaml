@@ -4,6 +4,8 @@ metadata:
   name: backstage-template-test
   annotations:
     github.com/project-slug: jayacs185/backstage-template-test
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/code-coverage: scm-only
 spec:
   type: website
   lifecycle: experimental

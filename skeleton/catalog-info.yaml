@@ -8,7 +8,7 @@ metadata:
   annotations:
     github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
     backstage.io/techdocs-ref: dir:.
-    backstage.io/code-coverage: scm-only
+    #backstage.io/code-coverage: scm-only
     #backstage.io/managed-by-origin-location: url:http://github.com/jayacs185/backstage-template-test/blob/main/skeleton/catalog-info.yaml
 spec:
   type: website

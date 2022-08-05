@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.component_id | dump}}
+  {%- if values.description %}
+  description: ${{values.description | dump}}
+  {%- endif %}
+  annotations:
+    github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/code-coverage: scm-only
+    backstage.io/managed-by-origin-location: url:https://dev.azure.com/BUnonprofitandedu/DevOps%20Practice/_git/Backstage-template?path=/skeleton/catalog-info.yaml
+spec:
+  type: website
+  lifecycle: experimental
+  owner: ${{values.owner | dump}}

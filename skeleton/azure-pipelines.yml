@@ -1,0 +1,104 @@
+# Maven
+
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  trivyVersion: 0.22.0
+  tag: 'test-$(Build.BuildId)'
+  imageName: 'testimage'
+
+steps:
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)'
+    Contents: '**/*.jar'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+- script: |
+    sudo apt-get install rpm
+    wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+    sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+    trivy -v
+  displayName: 'Download and install Trivy'
+
+- task: Docker@2
+  displayName: Image Build
+  inputs:
+    containerRegistry: 'sc4webapp'
+    repository: 'testimage'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+# - task: CmdLine@2
+#   displayName: "Run trivy scan"
+#   inputs:
+#     script: |
+#       trivy image test2022.azurecr.io/$(imageName):$(tag)
+
+# - task: CmdLine@2
+#   displayName: "Final Trivy Check"
+#   inputs:
+#     script: |
+#       trivy image --exit-code 0 --severity LOW,MEDIUM --format template --template "@templates/junit.tpl" -o junit-report-low-med.xml test2022.azurecr.io/$(imageName):$(tag)
+#       trivy image --exit-code 0 --severity HIGH,CRITICAL --format template --template "@templates/junit.tpl" -o junit-report-high-crit.xml test2022.azurecr.io/$(imageName):$(tag)
+
+# - task: PublishTestResults@2
+#   displayName: "Low and Medium Vulnerabilities report"
+#   inputs:
+#     testResultsFormat: 'JUnit'
+#     testResultsFiles: '**/junit-report-low-med.xml'
+#     mergeTestResults: true
+#     failTaskOnFailedTests: false
+#     testRunTitle: 'Trivy - Low and Medium Vulnerabilities'
+#   condition: 'always()'   
+
+# - task: PublishTestResults@2
+#   displayName: "High and Critical Vulnerabilities report"
+#   inputs:
+#     testResultsFormat: 'JUnit'
+#     testResultsFiles: '**/junit-report-high-crit.xml'
+#     mergeTestResults: true
+#     failTaskOnFailedTests: true
+#     testRunTitle: 'Trivy - High and Critical Vulnerabilities'
+#   condition: 'always()'
+  
+- task: Docker@2
+  displayName: Image Push
+  inputs:
+    containerRegistry: 'sc4webapp'
+    repository: 'testimage'
+    command: 'push'
+
+# - task: Docker@2
+#   inputs:
+#     containerRegistry: 'TestConnection'
+#     command: 'login'
+# - task: Bash@3
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       docker pull test2022.azurecr.io/$(imageName):test-34
+#       docker run test2022.azurecr.io/$(imageName):test-34
+#       docker ps
+- task: PublishBuildArtifacts@1

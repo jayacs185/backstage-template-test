@@ -9,7 +9,7 @@ metadata:
     github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
     backstage.io/techdocs-ref: dir:.
     backstage.io/code-coverage: scm-only
-    backstage.io/managed-by-origin-location: url:https://dev.azure.com/BUnonprofitandedu/DevOps%20Practice/_git/Backstage-template?path=/skeleton/catalog-info.yaml
+#     backstage.io/managed-by-origin-location: url:https://dev.azure.com/BUnonprofitandedu/DevOps%20Practice/_git/Backstage-template?path=/skeleton/catalog-info.yaml
 spec:
   type: website
   lifecycle: experimental
